@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📈 Stock Selector</title>
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #f7f8fc;
+            color: #111827;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-weight: 600;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #1f2937;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        button.company-btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button.company-btn:hover {
+            background-color: #2563eb;
+        }
+
+        button.company-btn.selected {
+            background-color: #f59e0b;
+        }
+
+        button#search-btn {
+            padding: 12px 22px;
+            border-radius: 8px;
+            border: none;
+            background-color: #10b981;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        button#search-btn:hover { background-color: #059669; }
+
+        .card {
+            background: white;
+            padding: 30px 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .card h2 { font-size: 1.5rem; color: #1f2937; margin-bottom: 15px; }
+        .card p { font-size: 1rem; margin: 6px 0; color: #4b5563; }
+        .card img { margin-top: 20px; border-radius: 8px; max-width: 100%; }
+
+        .error { color: #ef4444; font-weight: 500; margin-top: 20px; }
+
+        @media(max-width: 600px){
+            .button-group { flex-direction: column; gap: 12px; }
+            button.company-btn, button#search-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>📈 Stock Selector</h1>
+
+<form method="POST">
+    <div class="button-group">
+        {% for region, comps in companies.items() %}
+            {% for company in comps %}
+            <button type="submit" name="selected_company" value="{{ company }}" class="company-btn {% if selected_company==company %}selected{% endif %}">
+                {{ company }}
+            </button>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    {% if selected_company %}
+        <input type="hidden" name="selected_company" value="{{ selected_company }}">
+        <div style="display:flex; justify-content:center; width:100%; margin-top:10px;">
+            <button type="submit" name="search_trigger" value="1" id="search-btn">
+                Search
+            </button>
+        </div>
+    {% endif %}
+</form>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+{% if stock_data %}
+<div class="card">
+    <h2>{{ stock_data.name }} ({{ stock_data.symbol }})</h2>
+    <p><b>Current Price:</b> {{ stock_data.price }}</p>
+    {% if stock_data.percent_change %}
+    <p><b>Change %:</b> {{ stock_data.percent_change }}%</p>
+    {% endif %}
+    <p><b>Day High:</b> {{ stock_data.high }}</p>
+    <p><b>Day Low:</b> {{ stock_data.low }}</p>
+    <p><small>Last Updated: {{ stock_data.last_updated }}</small></p>
+    <img src="{{ stock_data.chart }}" alt="Candlestick Chart">
+</div>
+{% endif %}
+
+</body>
+</html>
